@@ -13,6 +13,6 @@ public record ReplaceExpenseSharesRequest(
         @NotEmpty(message = "Minimal harus ada satu participant")
         @Valid
         @Schema(description = "Daftar participant yang menerima pembagian")
-        List<ExpenseShareAllocationRequest> allocations
+        List<@NotNull @Valid ExpenseShareAllocationRequest> allocations
 ) {
 }

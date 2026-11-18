@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ public record UpdateExpenseRequest(
         SplitType splitType,
 
         @NotNull(message = "Tanggal pengeluaran wajib diisi")
-        OffsetDateTime expenseDate
+        LocalDate expenseDate
 
 ) {
 }

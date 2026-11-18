@@ -6,6 +6,7 @@ import com.novri.splitbill.dto.expense.UpdateExpenseRequest;
 import com.novri.splitbill.entity.Expense;
 import com.novri.splitbill.repository.BillGroupRepository;
 import com.novri.splitbill.repository.ExpenseRepository;
+import com.novri.splitbill.repository.ExpenseShareRepository;
 import com.novri.splitbill.repository.ParticipantRepository;
 import com.novri.splitbill.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.UUID;
 @Transactional
 public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseRepository expenseRepository;
+    private final ExpenseShareRepository expenseShareRepository;
     private final BillGroupRepository groupRepository;
     private final ParticipantRepository participantRepository;
 
@@ -83,6 +85,21 @@ public class ExpenseServiceImpl implements ExpenseService {
         Expense expense = findExpense(groupId, expenseId);
 
         validatePayer(groupId, request.payerId());
+
+        boolean allocationMustBeRecreated =
+                expense.getAmount().compareTo(request.amount()) != 0
+                        || expense.getSplitType() != request.splitType();
+
+        if (allocationMustBeRecreated) {
+            var existingShares =
+                    expenseShareRepository.findAllByGroupIdAndExpenseId(
+                            groupId,
+                            expenseId
+                    );
+
+            expenseShareRepository.deleteAll(existingShares);
+            expenseShareRepository.flush();
+        }
 
         expense.update(
                 request.payerId(),
@@ -153,7 +170,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 expense.getDescription(),
                 expense.getAmount(),
                 expense.getSplitType(),
-                expense.getExpenseDate(),
+                expense.getExpenseDate().toLocalDate(),
                 expense.getCreatedAt(),
                 expense.getUpdatedAt()
         );

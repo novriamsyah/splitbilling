@@ -11,6 +11,7 @@ import com.novri.splitbill.repository.BillGroupRepository;
 import com.novri.splitbill.repository.ExpenseRepository;
 import com.novri.splitbill.repository.ExpenseShareRepository;
 import com.novri.splitbill.repository.ParticipantRepository;
+import com.novri.splitbill.service.ServiceChargeCalculator;
 import com.novri.splitbill.service.SettlementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,7 @@ public class SettlementServiceImpl implements SettlementService {
     private final ParticipantRepository participantRepository;
     private final ExpenseRepository expenseRepository;
     private final ExpenseShareRepository expenseShareRepository;
+    private final ServiceChargeCalculator serviceChargeCalculator;
 
     @Override
     public SettlementResponse calculateSettlement(UUID groupId) {
@@ -189,6 +191,8 @@ public class SettlementServiceImpl implements SettlementService {
                 totalExpense,
                 totalExpense,
                 totalAllocated,
+                serviceChargeCalculator.percentage(),
+                serviceChargeCalculator.amountFor(totalExpense),
                 balanceResponses,
                 transfers
         );

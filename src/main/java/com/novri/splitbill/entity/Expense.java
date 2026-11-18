@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 @Entity
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Expense {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -29,12 +31,7 @@ public class Expense {
     @Column(name = "description", nullable = false, length = 255)
     private String description;
 
-    @Column(
-            name = "amount",
-            nullable = false,
-            precision = 19,
-            scale = 2
-    )
+    @Column(name = "amount", nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
@@ -56,14 +53,16 @@ public class Expense {
             String description,
             BigDecimal amount,
             SplitType splitType,
-            OffsetDateTime  expenseDate
+            LocalDate expenseDate
     ) {
         this.groupId = groupId;
         this.payerId = payerId;
         this.description = description;
         this.amount = amount;
         this.splitType = splitType;
-        this.expenseDate = expenseDate;
+        this.expenseDate = expenseDate
+                .atStartOfDay(ZoneId.of("Asia/Jakarta"))
+                .toOffsetDateTime();
     }
 
     @PrePersist
@@ -83,12 +82,14 @@ public class Expense {
             String description,
             BigDecimal amount,
             SplitType splitType,
-            OffsetDateTime  expenseDate
+            LocalDate expenseDate
     ) {
         this.payerId = payerId;
         this.description = description;
         this.amount = amount;
         this.splitType = splitType;
-        this.expenseDate = expenseDate;
+        this.expenseDate = expenseDate
+                .atStartOfDay(ZoneId.of("Asia/Jakarta"))
+                .toOffsetDateTime();
     }
 }

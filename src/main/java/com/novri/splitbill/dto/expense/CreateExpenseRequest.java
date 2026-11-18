@@ -6,7 +6,6 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Schema(description = "create expense")
@@ -42,6 +41,6 @@ public record CreateExpenseRequest (
 
         @NotNull(message = "Tanggal pengeluaran wajib diisi")
         @Schema(example = "2026-11-14")
-        OffsetDateTime expenseDate
+        LocalDate expenseDate
 ) {
 }
